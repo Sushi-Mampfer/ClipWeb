@@ -8,7 +8,7 @@ The backend for [clip](https://github.com/Sushi-Mampfer/clip), feel free to use 
 **Body:**
 ```json
 {
-    data: "Your data",
-    expiry: "Time to expire in minutes(max 1440)"
+    "data": "Your data",
+    "expiry": "Time to expire in minutes(max 1440)"
 }
 ```
