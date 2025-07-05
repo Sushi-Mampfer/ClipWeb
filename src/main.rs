@@ -1,16 +1,28 @@
 mod api;
+mod datatypes;
+mod templates;
 
-use std::{net::SocketAddr, sync::LazyLock};
+use std::{net::SocketAddr, sync::LazyLock, time::Duration};
 
 use axum::{routing::{get, post}, Router};
 use sqlx::SqlitePool;
+use tokio::time::sleep;
 use tower_http::{cors::{Any, CorsLayer}, services::ServeFile};
+
+use crate::api::expiery::remove_expired;
 
 static DB: LazyLock<SqlitePool> = LazyLock::new(|| SqlitePool::connect_lazy("sqlite://db.sqlite").unwrap());
 
 
 #[tokio::main]
 async fn main() {
+    tokio::spawn(async move {
+        loop {
+            remove_expired().await;
+            sleep(Duration::from_secs(10)).await;
+        }
+    });
+
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)

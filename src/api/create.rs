@@ -3,7 +3,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use rand::distr::{Alphabetic, SampleString};
 
-use crate::{api::datatypes::Create, DB};
+use crate::{datatypes::Create, DB};
 
 const MAX_TIME: i32 = 24 * 60 * 60;
 
@@ -30,14 +30,11 @@ pub async fn create(Json(json): Json<Create>) -> impl IntoResponse {
         id = Alphabetic.sample_string(&mut rand::rng(), 5).to_lowercase();
         match sqlx::query!("INSERT into pastes (id, data, expiery) VALUES (?, ?, ?)", id, content, expiery).execute(&*DB).await {
             Ok(_) => break,
-            Err(sqlx::Error::Database(e)) => {
-                match e.code() {
-                    Some(i) if i == "1555" => continue,
-                    Some(_) => return (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
-                    None => return (StatusCode::INTERNAL_SERVER_ERROR, "An unexpected error occured.".to_string())
-                }
+            Err(sqlx::Error::Database(e)) if e.code() == Some(std::borrow::Cow::Borrowed("1555")) => continue,
+            Err(e) => {
+                println!("{}", e);
+                return (StatusCode::INTERNAL_SERVER_ERROR, "An unexpected error occured.".to_string())
             }
-            Err(e) => return (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()),
         };
     }
     (StatusCode::OK, id)
