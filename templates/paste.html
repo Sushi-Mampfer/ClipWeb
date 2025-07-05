@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style.css">
     <title>Paste {{ id }}</title>
 </head>
 <body>
     <textarea id="content" disabled>{{ content }}</textarea>
-    <button onclick="navigator.clipboard.writeText(document.getElementById('content').value)">Copy</button>
+    <button onclick="navigator.clipboard.writeText(document.getElementById('content').value)">COPY</button>
 </body>
 </html>
