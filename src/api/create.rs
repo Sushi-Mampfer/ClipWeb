@@ -9,6 +9,7 @@ const MAX_TIME: i32 = 24 * 60 * 60;
 
 pub async fn create(Json(json): Json<Create>) -> impl IntoResponse {
     let content = match json.content {
+        Some(content) if content == "".to_string() => return (StatusCode::BAD_REQUEST, "Don't waste my storage.".to_string()),
         Some(content) => content,
         None => return (StatusCode::BAD_REQUEST, "Don't waste my storage.".to_string())
     };

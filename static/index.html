@@ -4,8 +4,48 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Test</title>
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-    <h1>Test</h1>
+    <div id="notification" onclick="this.classList.remove('shown')"></div>
+    <textarea name="" id="content"></textarea>
+    <button onclick="create()">CREATE</button>
+    <script defer>
+        const contentEl = document.getElementById("content");
+        const notificationEl = document.getElementById("notification");
+
+        async function create() {
+            
+            if (contentEl.value === "") {
+                notification("Don't waste my storage!")
+                return
+            }
+
+            const res = await fetch("/create", {
+                method: "POST",
+                body: JSON.stringify({
+                    content: contentEl.value
+                }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+            if (!res.ok) {
+                notification(`An error occured: ${await res.text()}`)
+            } else {
+                location.href = `/${await res.text()}`
+            }
+        }
+
+        function notification(text) {
+            notificationEl.innerHTML = text;
+            notificationEl.classList.add("shown");
+        }
+
+        if (Math.floor(Math.random() * 5) === 0) {
+            notification("Have you checked out <a href='https://github.com/Sushi-Mampfer/Clip'>Clip</a> yet?")
+        }
+
+    </script>
 </body>
 </html>

@@ -3,8 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/style.css">
     <title>Paste {{ id }}</title>
+    <style>
+        html {
+            height: 100%;
+            background-color: #222;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            padding: 5em 25% 15em;
+            height: calc(100% - 20em);
+        }
+
+        textarea {
+            resize: none;
+            word-break: break-word;
+            flex: 1 1;
+            background-color: #333;
+            border-color: purple;
+            border-radius: 1rem;
+            border-style: solid;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #eee;
+            text-align: center;
+            font-size: 2em;
+            transition: box-shadow 600ms ease-out;
+        }
+
+        textarea:hover {
+            box-shadow: 0 0 1rem 0 magenta;
+            transition: box-shadow 300ms;
+        }
+
+        button {
+            height: fit-content;
+            border-radius: 1.5em;
+            font-size: 3em;
+            padding: 1rem;
+            background-color: #333;
+            border-color: purple;
+            border-style: solid;
+            color: #eee;
+            background-image: linear-gradient(135deg, purple 50%, #0000 50%);
+            background-repeat: no-repeat;
+            background-size: 300% 300%;
+            background-position: bottom right;
+            transition: background-position .5s linear,
+            box-shadow .5s linear;
+            box-shadow: 0 0 1rem 0 magenta;
+        }
+
+        button:hover {
+            background-position: top left;
+            box-shadow: 0 0 1rem .5rem magenta;
+        }
+    </style>
 </head>
 <body>
     <textarea id="content" disabled>{{ content }}</textarea>
