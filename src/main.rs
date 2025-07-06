@@ -2,7 +2,7 @@ mod api;
 mod datatypes;
 mod templates;
 
-use std::{net::SocketAddr, sync::{LazyLock, Mutex}, time::{Duration, Instant}};
+use std::{env, net::SocketAddr, sync::{LazyLock, Mutex}, time::{Duration, Instant}};
 
 use axum::{routing::{get, post}, Router};
 use sqlx::SqlitePool;
@@ -43,6 +43,6 @@ async fn main() {
         .fallback_service(ServeFile::new("static/index.html"))
         .layer(cors);
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let addr = SocketAddr::from(([127, 0, 0, 1], env::var("CLIPORT").unwrap_or("8080".to_string()).parse().unwrap()));
     axum_server::bind(addr).serve(app.into_make_service()).await.unwrap();
 }
