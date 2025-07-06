@@ -1,8 +1,8 @@
 use askama::Template;
-use axum::{extract::Path, http::StatusCode, response::{Html, IntoResponse}};
+use axum::{extract::Path, http::StatusCode, response::{Html, IntoResponse, Redirect}};
 use sqlx::{QueryBuilder, Row};
 
-use crate::{templates::{NotFoundTemplate, PasteTemplate}, DB};
+use crate::{templates::{PasteTemplate}, DB};
 
 pub async fn get(Path(id): Path<String>) -> impl IntoResponse {
     let content: String = match QueryBuilder::new("SELECT * FROM pastes WHERE id = ")
@@ -10,7 +10,7 @@ pub async fn get(Path(id): Path<String>) -> impl IntoResponse {
         .build()
         .fetch_one(&*DB).await {
             Ok(r) => r.get("data"),
-            Err(sqlx::Error::RowNotFound) => return Html(NotFoundTemplate {}.render().unwrap()).into_response(),
+            Err(sqlx::Error::RowNotFound) => return Redirect::to("/").into_response(),
             Err(e) => {
                 {
                 println!("{}", e);

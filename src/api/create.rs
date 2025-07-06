@@ -1,13 +1,27 @@
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 use axum::{http::StatusCode, response::IntoResponse, Json};
 use rand::distr::{Alphabetic, SampleString};
 
-use crate::{datatypes::Create, DB};
+use crate::{datatypes::Create, DB, RL};
 
 const MAX_TIME: i32 = 24 * 60 * 60;
 
 pub async fn create(Json(json): Json<Create>) -> impl IntoResponse {
+
+    match RL.lock() {
+        Ok(mut l) => {
+            l.push(Instant::now());
+            if l.len() > 1000 {
+                return (StatusCode::TOO_MANY_REQUESTS, "Global Ratelimit exceeded.".to_string());
+            }
+        }
+        Err(e) => {
+            println!("{}", e);
+            return (StatusCode::INTERNAL_SERVER_ERROR, "An unexpected error occured.".to_string())
+        }
+    }
+
     let content = match json.content {
         Some(content) if content == "".to_string() => return (StatusCode::BAD_REQUEST, "Don't waste my storage.".to_string()),
         Some(content) => content,

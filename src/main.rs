@@ -2,16 +2,17 @@ mod api;
 mod datatypes;
 mod templates;
 
-use std::{net::SocketAddr, sync::LazyLock, time::Duration};
+use std::{net::SocketAddr, sync::{LazyLock, Mutex}, time::{Duration, Instant}};
 
 use axum::{routing::{get, post}, Router};
 use sqlx::SqlitePool;
 use tokio::time::sleep;
 use tower_http::{cors::{Any, CorsLayer}, services::ServeFile};
 
-use crate::api::expiery::remove_expired;
+use crate::api::expiery::{clear_ratelimit, remove_expired};
 
 static DB: LazyLock<SqlitePool> = LazyLock::new(|| SqlitePool::connect_lazy("sqlite://db.sqlite").unwrap());
+static RL: LazyLock<Mutex<Vec<Instant>>> = LazyLock::new(|| Mutex::new(Vec::new()));
 
 
 #[tokio::main]
@@ -23,6 +24,13 @@ async fn main() {
         }
     });
 
+    tokio::spawn(async move {
+        loop {
+            clear_ratelimit().await;
+            sleep(Duration::from_secs(1)).await;
+        }
+    });
+
     let cors = CorsLayer::new()
         .allow_origin(Any)
         .allow_methods(Any)
@@ -30,7 +38,6 @@ async fn main() {
     let app = Router::new();
     
     let app = app
-        .nest_service("/style.css", ServeFile::new("static/style.css"))
         .route("/create", post(api::create::create))
         .route("/{id}", get(api::get::get))
         .fallback_service(ServeFile::new("static/index.html"))
