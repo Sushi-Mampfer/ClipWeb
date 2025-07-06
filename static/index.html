@@ -134,9 +134,11 @@
             notificationEl.classList.add("shown");
         }
 
-        if (Math.floor(Math.random() * 5) === 0) {
-            notification("Have you checked out <a href='https://github.com/Sushi-Mampfer/Clip'>Clip</a> yet?")
-        }
+        window.addEventListener("load", () => {
+            if (Math.floor(Math.random() * 5) === 0) {
+                notification("Have you checked out <a href='https://github.com/Sushi-Mampfer/Clip'>Clip</a> yet?")
+            }
+        });
 
     </script>
 </body>
