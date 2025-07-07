@@ -1,0 +1,12 @@
+{
+  "db_name": "SQLite",
+  "query": "INSERT into pastes (id, data, expiery, private) VALUES (?, ?, ?, ?)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 4
+    },
+    "nullable": []
+  },
+  "hash": "9e7231517484fd5a41f3b097270638b11f5a46eb86547c1f701b4b110e8fc065"
+}

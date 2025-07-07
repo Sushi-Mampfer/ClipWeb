@@ -44,9 +44,11 @@
         }
 
         button {
+            flex: 1 1 50%;
+            border-width: 2px;
             height: fit-content;
             border-radius: 1.5em;
-            font-size: 3em;
+            font-size: 3rem;
             padding: 1rem;
             background-color: #333;
             border-color: purple;
@@ -66,7 +68,7 @@
             box-shadow: 0 0 1rem .5rem magenta;
         }
 
-        div {
+        div#notification {
             cursor: grab;
             color: #eee;
             margin: 2.5rem 2.5%;
@@ -85,7 +87,7 @@
             box-shadow .2s linear;
         }
 
-        div.shown {
+        div#notification.shown {
             box-shadow: 0 0 2rem .5rem purple;
             top: 0;
             transition: top 1s cubic-bezier(.68,-0.55,.27,1.55), 
@@ -96,17 +98,27 @@
         a {
             color: #eee;
         }
+
+        #spacer {
+            width: 100%;
+            height: fit-content;
+            display: flex;
+            gap: 1em;
+        }
     </style>
 </head>
 <body>
     <div id="notification" onclick="this.classList.remove('shown')"></div>
     <textarea name="" id="content"></textarea>
-    <button onclick="create()">CREATE</button>
-    <script defer>
+    <div id="spacer">
+        <button onclick="create(false)">PUBLIC</button>
+        <button onclick="create(true)">PRIVATE</button>
+    </div>
+        <script defer>
         const contentEl = document.getElementById("content");
         const notificationEl = document.getElementById("notification");
 
-        async function create() {
+        async function create(private) {
             
             if (contentEl.value === "") {
                 notification("Don't waste my storage!")
@@ -116,7 +128,8 @@
             const res = await fetch("/create", {
                 method: "POST",
                 body: JSON.stringify({
-                    content: contentEl.value
+                    content: contentEl.value,
+                    private: private
                 }),
                 headers: {
                     "Content-Type": "application/json"
@@ -125,7 +138,9 @@
             if (!res.ok) {
                 notification(await res.text())
             } else {
-                location.href = `/${await res.text()}`
+                const url = `${location.href}${await res.text()}`;
+                navigator.clipboard.writeText(url);
+                notification("Link copied to clipboard.")
             }
         }
 

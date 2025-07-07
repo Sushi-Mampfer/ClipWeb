@@ -9,7 +9,15 @@ pub async fn get(Path(id): Path<String>) -> impl IntoResponse {
         .push_bind(&id)
         .build()
         .fetch_one(&*DB).await {
-            Ok(r) => r.get("data"),
+            Ok(r) => {
+                if r.get("private") {
+                    let _ = QueryBuilder::new("DELETE FROM pastes WHERE id = ")
+                    .push_bind(&id)
+                    .build()
+                    .execute(&*DB).await;
+                }
+                r.get("data")
+            }
             Err(sqlx::Error::RowNotFound) => return Redirect::to("/").into_response(),
             Err(e) => {
                 {

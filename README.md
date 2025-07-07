@@ -9,6 +9,6 @@ The backend for [clip](https://github.com/Sushi-Mampfer/clip), feel free to use 
 ```json
 {
     "content": "Your data",
-    "expiry": "Time to expire in seconds(max 86400, 24h)"
+    "privat": "true/false, if true the paste will be deleted after being viewed"
 }
 ```
